@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Plus, X, TrendingDown, Zap, Home as HomeIcon, Package, MoreHorizontal } from 'lucide-react';
+import { Plus, X, TrendingDown, Zap, Home as HomeIcon, Package, MoreHorizontal, Loader2 } from 'lucide-react';
 import api from '../api';
+import toast from 'react-hot-toast';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -11,6 +12,8 @@ const Expenses = () => {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Other');
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
     { name: 'Electricity', icon: <Zap size={16} /> },
@@ -34,15 +37,20 @@ const Expenses = () => {
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
-    if (!amount || !title) return;
+    if (!amount || !category || isSubmitting) return;
+
+    setIsSubmitting(true);
+    const toastId = toast.loading('Saving expense...');
 
     try {
       await api.post('/transactions', {
         type: 'expense',
         amount: Number(amount),
-        title,
+        title: title || category,
         category
       });
+
+      toast.success('Expense recorded!', { id: toastId });
 
       setIsModalOpen(false);
       setAmount('');
@@ -51,6 +59,9 @@ const Expenses = () => {
       fetchExpenses();
     } catch (error) {
       console.error('Error adding expense:', error);
+      toast.error('Failed to save expense.', { id: toastId });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,10 +109,15 @@ const Expenses = () => {
       {/* Expense List */}
       <div className="space-y-3 pb-4">
         {expenses.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm mt-8">No expenses found for this period.</p>
+          <p className="text-center text-gray-400 text-sm mt-8">
+            No expenses found for this period.
+          </p>
         ) : (
           expenses.map((exp) => (
-            <div key={exp._id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+            <div
+              key={exp._id}
+              className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center"
+            >
               <div className="flex items-center space-x-3">
                 <div className="bg-red-50 p-2 rounded-lg">
                   <TrendingDown size={20} className="text-danger" />
@@ -130,13 +146,15 @@ const Expenses = () => {
       </div>
 
       {/* Add Expense Modal */}
-     {/* Add Expense Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 pb-12 animate-slide-up sm:animate-none max-h-[85vh] overflow-y-auto overscroll-contain">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 pb-12 max-h-[85vh] overflow-y-auto overscroll-contain">
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-bold">Add Expense</h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-1 bg-gray-100 rounded-full text-gray-600">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-1 bg-gray-100 rounded-full text-gray-600"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -177,8 +195,22 @@ const Expenses = () => {
                 ))}
               </div>
 
-              <button type="submit" className="w-full bg-amber-500 text-white font-bold text-lg py-4 rounded-xl mt-4 active:scale-95 transition-transform">
-                Save Expense
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full text-white font-bold text-lg py-4 rounded-xl mt-4 active:scale-95 transition-transform shadow-lg flex justify-center items-center ${
+                  isSubmitting
+                    ? 'bg-amber-400 cursor-not-allowed'
+                    : 'bg-[#d97706]'
+                }`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2" size={24} /> Saving...
+                  </>
+                ) : (
+                  'Save Expense Record'
+                )}
               </button>
             </form>
           </div>

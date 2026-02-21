@@ -12,12 +12,12 @@ import {
   ChevronRight
 } from 'lucide-react';
 import api from '../api';
+import toast from 'react-hot-toast';
 
 const Home = () => {
   const navigate = useNavigate();
   const [showStats, setShowStats] = useState(false);
 
-  // LIVE Dashboard State
   const [stats, setStats] = useState({
     sales: 0,
     dues: 0,
@@ -27,11 +27,14 @@ const Home = () => {
 
   useEffect(() => {
     const fetchTodayStats = async () => {
+      const toastId = toast.loading('Syncing live data...', { id: 'dashboard-sync' });
       try {
         const { data } = await api.get('/transactions/summary/today');
         setStats(data);
+        toast.success('System Online & Synced', { id: toastId, duration: 2000 });
       } catch (error) {
         console.error('Error fetching today stats:', error);
+        toast.error('Failed to sync backend', { id: toastId });
       }
     };
 
