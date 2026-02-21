@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api"; // UPDATED IMPORT
 import { Plus, X, Truck, Calendar, CheckCircle2 } from "lucide-react";
 
 const Supplier = () => {
@@ -17,7 +17,7 @@ const Supplier = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/suppliers");
+      const { data } = await api.get("/suppliers"); // UPDATED API CALL
       setSuppliers(data);
     } catch (error) {
       console.error("Error fetching suppliers:", error);
@@ -41,7 +41,7 @@ const Supplier = () => {
     else if (paid > 0 && paid < Number(totalCost)) paymentStatus = "partial";
 
     try {
-      await axios.post("http://localhost:5000/api/suppliers", {
+      await api.post("/suppliers", { // UPDATED API CALL
         supplierName,
         productName,
         quantity: Number(quantity),
@@ -49,7 +49,7 @@ const Supplier = () => {
         totalCost: Number(totalCost),
         paidAmount: paid,
         remainingDue,
-        expectedSellPrice: Number(expectedSellPrice) || 0, // Sent to backend
+        expectedSellPrice: Number(expectedSellPrice) || 0,
         paymentStatus,
         dueDate,
       });
@@ -72,14 +72,13 @@ const Supplier = () => {
     if (!window.confirm("Confirm full remaining payment made to supplier?")) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/suppliers/${id}/pay`);
+      await api.put(`/suppliers/${id}/pay`); // UPDATED API CALL
       fetchSuppliers();
     } catch (error) {
       console.error("Error marking as paid:", error);
     }
   };
 
-  // Calculate total money you owe to the market
   const totalPendingSupplier = suppliers
     .filter((s) => s.paymentStatus !== "paid")
     .reduce((acc, curr) => acc + (curr.totalCost - (curr.paidAmount || 0)), 0);
@@ -156,7 +155,6 @@ const Supplier = () => {
                   <p>Total Bill: <span className="font-bold text-[#0f172a]">₹{item.totalCost}</span></p>
                   <p>Paid Upfront: <span className="font-bold text-[#16a34a]">₹{item.paidAmount || 0}</span></p>
                   
-                  {/* NEW: Display Expected Sell Price and Profit if it exists */}
                   {item.expectedSellPrice > 0 && (
                     <>
                       <div className="col-span-2 h-px bg-gray-200 my-1"></div>

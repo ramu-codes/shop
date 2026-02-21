@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Plus, X, ShoppingBag } from 'lucide-react';
+import api from '../api';
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
@@ -13,10 +13,10 @@ const Sales = () => {
   const [quantity, setQuantity] = useState('1');
   const [paymentMode, setPaymentMode] = useState('Cash');
 
-  // Fetch sales from your backend
+  // Fetch sales from backend
   const fetchSales = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/transactions?type=sale&period=${filter.toLowerCase()}`);
+      const { data } = await api.get(`/transactions?type=sale&period=${filter.toLowerCase()}`);
       setSales(data);
     } catch (error) {
       console.error('Error fetching sales:', error);
@@ -29,10 +29,10 @@ const Sales = () => {
 
   const handleAddSale = async (e) => {
     e.preventDefault();
-    if (!amount) return; // Basic validation
+    if (!amount) return;
 
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      await api.post('/transactions', {
         type: 'sale',
         amount: Number(amount),
         title: title || 'General Item',
@@ -44,7 +44,7 @@ const Sales = () => {
       setAmount('');
       setTitle('');
       setQuantity('1');
-      fetchSales(); // Refresh list immediately
+      fetchSales();
     } catch (error) {
       console.error('Error adding sale:', error);
     }
@@ -118,10 +118,10 @@ const Sales = () => {
         )}
       </div>
 
-      {/* Add Sale Modal (Mobile optimized bottom sheet style) */}
+      {/* Add Sale Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 animate-slide-up sm:animate-none">
+          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5">
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-bold">Add New Sale</h2>
               <button onClick={() => setIsModalOpen(false)} className="p-1 bg-gray-100 rounded-full text-gray-600">
@@ -130,50 +130,10 @@ const Sales = () => {
             </div>
 
             <form onSubmit={handleAddSale} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Price (₹) *</label>
-                <input 
-                  type="number" 
-                  required 
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 text-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Item Name (optional)</label>
-                <input 
-                  type="text" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                  placeholder="e.g. Rice, Sugar"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Quantity</label>
-                  <input 
-                    type="number" 
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                    min="1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Payment Mode</label>
-                  <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button type="button" onClick={() => setPaymentMode('Cash')} className={`flex-1 py-2 text-sm rounded-md font-medium transition-colors ${paymentMode === 'Cash' ? 'bg-primary text-white shadow' : 'text-gray-600'}`}>Cash</button>
-                    <button type="button" onClick={() => setPaymentMode('UPI')} className={`flex-1 py-2 text-sm rounded-md font-medium transition-colors ${paymentMode === 'UPI' ? 'bg-primary text-white shadow' : 'text-gray-600'}`}>UPI</button>
-                  </div>
-                </div>
-              </div>
-
-              <button type="submit" className="w-full bg-primary text-white font-bold text-lg py-4 rounded-xl mt-4 active:scale-95 transition-transform">
+              <input type="number" required value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" className="w-full border p-3 rounded-lg" />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Item name" className="w-full border p-3 rounded-lg" />
+              
+              <button type="submit" className="w-full bg-primary text-white font-bold py-4 rounded-xl">
                 Save Sale
               </button>
             </form>

@@ -1,5 +1,4 @@
- import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart,
@@ -12,6 +11,7 @@ import {
   CreditCard,
   ChevronRight
 } from 'lucide-react';
+import api from '../api';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -28,9 +28,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTodayStats = async () => {
       try {
-        const { data } = await axios.get(
-          'http://localhost:5000/api/transactions/summary/today'
-        );
+        const { data } = await api.get('/transactions/summary/today');
         setStats(data);
       } catch (error) {
         console.error('Error fetching today stats:', error);
@@ -68,46 +66,32 @@ const Home = () => {
         {/* LIVE Stats Grid */}
         <div className="bg-[#1e3a8a] rounded-2xl p-4 shadow-inner grid grid-cols-2 gap-y-4 gap-x-2 text-center border border-blue-800/50">
           <div>
-            <p className="text-[11px] text-blue-200 font-semibold mb-1">
-              Today's Sales
-            </p>
+            <p className="text-[11px] text-blue-200 font-semibold mb-1">Today's Sales</p>
             <p className="text-lg font-bold tracking-widest">
-              {showStats
-                ? `₹${stats.sales.toLocaleString('en-IN')}`
-                : mask}
+              {showStats ? `₹${stats.sales.toLocaleString('en-IN')}` : mask}
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] text-blue-200 font-semibold mb-1">
-              Pending Dues
-            </p>
+            <p className="text-[11px] text-blue-200 font-semibold mb-1">Pending Dues</p>
             <p className="text-lg font-bold tracking-widest">
-              {showStats
-                ? `₹${stats.dues.toLocaleString('en-IN')}`
-                : mask}
+              {showStats ? `₹${stats.dues.toLocaleString('en-IN')}` : mask}
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] text-blue-200 font-semibold mb-1">
-              Today's Profit
-            </p>
+            <p className="text-[11px] text-blue-200 font-semibold mb-1">Today's Profit</p>
             <p
               className={`text-lg font-bold tracking-widest ${
                 stats.profit < 0 ? 'text-red-400' : 'text-green-400'
               }`}
             >
-              {showStats
-                ? `₹${stats.profit.toLocaleString('en-IN')}`
-                : mask}
+              {showStats ? `₹${stats.profit.toLocaleString('en-IN')}` : mask}
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] text-blue-200 font-semibold mb-1">
-              Transactions
-            </p>
+            <p className="text-[11px] text-blue-200 font-semibold mb-1">Transactions</p>
             <p className="text-lg font-bold tracking-widest">
               {showStats ? stats.transactions : mask}
             </p>

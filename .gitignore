@@ -3,6 +3,8 @@ node_modules/
 
 # Env files (CRITICAL)
 .env
+backend/.env
+frontend/.env
 .env.local
 .env.*.local
 
@@ -18,12 +20,7 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# OS / Editor
+# Editor
 .vscode/
 .idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?

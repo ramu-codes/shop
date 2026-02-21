@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Plus, X, TrendingDown, Zap, Home as HomeIcon, Package, MoreHorizontal } from 'lucide-react';
+import api from '../api';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filter, setFilter] = useState('Monthly'); // Default to monthly for expenses
-  
+  const [filter, setFilter] = useState('Monthly');
+
   // Form State
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
@@ -21,7 +21,7 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/transactions?type=expense&period=${filter.toLowerCase()}`);
+      const { data } = await api.get(`/transactions?type=expense&period=${filter.toLowerCase()}`);
       setExpenses(data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
@@ -37,13 +37,13 @@ const Expenses = () => {
     if (!amount || !title) return;
 
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
+      await api.post('/transactions', {
         type: 'expense',
         amount: Number(amount),
         title,
         category
       });
-      
+
       setIsModalOpen(false);
       setAmount('');
       setTitle('');
@@ -58,13 +58,13 @@ const Expenses = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header & Add Button */}
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-xl font-bold">Expenses</h1>
           <p className="text-xs text-gray-500">Track money going out</p>
         </div>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center shadow-md active:scale-95 transition-transform"
         >
@@ -75,7 +75,9 @@ const Expenses = () => {
       {/* Total Card */}
       <div className="bg-red-50 border border-red-100 p-4 rounded-xl shadow-sm">
         <p className="text-danger text-sm font-medium">Total Expenses ({filter})</p>
-        <p className="text-3xl font-bold text-danger mt-1">₹{totalExpenseAmount.toLocaleString('en-IN')}</p>
+        <p className="text-3xl font-bold text-danger mt-1">
+          ₹{totalExpenseAmount.toLocaleString('en-IN')}
+        </p>
       </div>
 
       {/* Filters */}
@@ -108,9 +110,16 @@ const Expenses = () => {
                   <p className="font-medium text-sm text-textDark">{exp.title}</p>
                   <div className="flex items-center space-x-2 mt-0.5">
                     <span className="text-[10px] text-gray-400">
-                      {new Date(exp.date).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                      {new Date(exp.date).toLocaleString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        day: '2-digit',
+                        month: 'short'
+                      })}
                     </span>
-                    <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[9px] font-medium">{exp.category}</span>
+                    <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[9px] font-medium">
+                      {exp.category}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -123,7 +132,7 @@ const Expenses = () => {
       {/* Add Expense Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5 animate-slide-up sm:animate-none">
+          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5">
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-bold">Add Expense</h2>
               <button onClick={() => setIsModalOpen(false)} className="p-1 bg-gray-100 rounded-full text-gray-600">
@@ -132,46 +141,39 @@ const Expenses = () => {
             </div>
 
             <form onSubmit={handleAddExpense} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Expense Title *</label>
-                <input 
-                  type="text" 
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder="e.g. Electricity Bill"
-                />
-              </div>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Expense Title"
+                className="w-full border border-gray-300 rounded-lg p-3"
+              />
 
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Amount (₹) *</label>
-                <input 
-                  type="number" 
-                  required 
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                  placeholder="Enter amount"
-                />
-              </div>
+              <input
+                type="number"
+                required
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Amount"
+                className="w-full border border-gray-300 rounded-lg p-3"
+              />
 
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-2">Category</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.name}
-                      type="button"
-                      onClick={() => setCategory(cat.name)}
-                      className={`flex items-center justify-center space-x-1 py-2 text-xs rounded-lg border ${
-                        category === cat.name ? 'border-amber-500 bg-amber-50 text-amber-700 font-bold' : 'border-gray-200 text-gray-500'
-                      }`}
-                    >
-                      {cat.icon} <span>{cat.name}</span>
-                    </button>
-                  ))}
-                </div>
+              <div className="grid grid-cols-2 gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.name}
+                    type="button"
+                    onClick={() => setCategory(cat.name)}
+                    className={`flex items-center justify-center space-x-1 py-2 text-xs rounded-lg border ${
+                      category === cat.name
+                        ? 'border-amber-500 bg-amber-50 text-amber-700 font-bold'
+                        : 'border-gray-200 text-gray-500'
+                    }`}
+                  >
+                    {cat.icon} <span>{cat.name}</span>
+                  </button>
+                ))}
               </div>
 
               <button type="submit" className="w-full bg-amber-500 text-white font-bold text-lg py-4 rounded-xl mt-4 active:scale-95 transition-transform">

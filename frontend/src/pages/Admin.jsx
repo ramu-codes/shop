@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { ShieldAlert, LogOut, TrendingUp, TrendingDown, Wallet, Users, Truck } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -22,7 +22,7 @@ const Admin = () => {
     setError('');
     setLoading(true);
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', { password });
+      const { data } = await api.post('/auth/login', { password });
       login(data.token);
     } catch (err) {
       setError('Incorrect password. Try again.');
@@ -33,13 +33,13 @@ const Admin = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/admin/analytics', {
+      const { data } = await api.get('/admin/analytics', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAnalytics(data);
     } catch (err) {
       console.error('Failed to fetch analytics', err);
-      if (err.response?.status === 401) logout(); // Token expired or invalid
+      if (err.response?.status === 401) logout();
     }
   };
 
@@ -83,7 +83,9 @@ const Admin = () => {
     <div className="space-y-6 pb-6">
       <div className="flex justify-between items-center bg-gray-900 text-white p-5 -mx-4 -mt-4 rounded-b-3xl shadow-md">
         <div>
-          <h1 className="text-xl font-bold flex items-center"><ShieldAlert size={20} className="mr-2"/> Admin Dashboard</h1>
+          <h1 className="text-xl font-bold flex items-center">
+            <ShieldAlert size={20} className="mr-2"/> Admin Dashboard
+          </h1>
           <p className="text-xs text-gray-400 mt-1">Full Financial Overview</p>
         </div>
         <button onClick={logout} className="p-2 bg-gray-800 rounded-full active:scale-95 text-gray-300">
@@ -94,40 +96,70 @@ const Admin = () => {
       {/* Main KPI Grid */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-green-50 border border-green-100 p-4 rounded-xl shadow-sm">
-          <p className="text-success text-xs font-semibold flex items-center mb-1"><TrendingUp size={14} className="mr-1"/> Total Sales</p>
-          <p className="text-2xl font-bold text-success">₹{analytics.totalSales.toLocaleString('en-IN')}</p>
+          <p className="text-success text-xs font-semibold flex items-center mb-1">
+            <TrendingUp size={14} className="mr-1"/> Total Sales
+          </p>
+          <p className="text-2xl font-bold text-success">
+            ₹{analytics.totalSales.toLocaleString('en-IN')}
+          </p>
         </div>
+
         <div className="bg-red-50 border border-red-100 p-4 rounded-xl shadow-sm">
-          <p className="text-danger text-xs font-semibold flex items-center mb-1"><TrendingDown size={14} className="mr-1"/> Total Expenses</p>
-          <p className="text-2xl font-bold text-danger">₹{analytics.totalExpenses.toLocaleString('en-IN')}</p>
+          <p className="text-danger text-xs font-semibold flex items-center mb-1">
+            <TrendingDown size={14} className="mr-1"/> Total Expenses
+          </p>
+          <p className="text-2xl font-bold text-danger">
+            ₹{analytics.totalExpenses.toLocaleString('en-IN')}
+          </p>
         </div>
+
         <div className="bg-primary/10 border border-primary/20 p-4 rounded-xl shadow-sm">
-          <p className="text-primary text-xs font-semibold flex items-center mb-1"><TrendingUp size={14} className="mr-1"/> Net Profit</p>
-          <p className="text-2xl font-bold text-primary">₹{analytics.netProfit.toLocaleString('en-IN')}</p>
+          <p className="text-primary text-xs font-semibold flex items-center mb-1">
+            <TrendingUp size={14} className="mr-1"/> Net Profit
+          </p>
+          <p className="text-2xl font-bold text-primary">
+            ₹{analytics.netProfit.toLocaleString('en-IN')}
+          </p>
         </div>
+
         <div className="bg-gray-100 border border-gray-200 p-4 rounded-xl shadow-sm">
-          <p className="text-gray-700 text-xs font-semibold flex items-center mb-1"><Wallet size={14} className="mr-1"/> Net Balance</p>
-          <p className="text-2xl font-bold text-gray-900">₹{analytics.netBalance.toLocaleString('en-IN')}</p>
+          <p className="text-gray-700 text-xs font-semibold flex items-center mb-1">
+            <Wallet size={14} className="mr-1"/> Net Balance
+          </p>
+          <p className="text-2xl font-bold text-gray-900">
+            ₹{analytics.netBalance.toLocaleString('en-IN')}
+          </p>
         </div>
       </div>
 
       {/* Pending Overview */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Pending Overview</h2>
+        <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">
+          Pending Overview
+        </h2>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
           <div className="p-4 flex justify-between items-center">
             <div>
-              <p className="font-bold text-textDark flex items-center"><Users size={16} className="mr-2 text-danger"/> Customer Dues</p>
+              <p className="font-bold text-textDark flex items-center">
+                <Users size={16} className="mr-2 text-danger"/> Customer Dues
+              </p>
               <p className="text-xs text-gray-500 mt-0.5 ml-6">Money to receive</p>
             </div>
-            <p className="font-bold text-danger">₹{analytics.customerDuesPending.toLocaleString('en-IN')}</p>
+            <p className="font-bold text-danger">
+              ₹{analytics.customerDuesPending.toLocaleString('en-IN')}
+            </p>
           </div>
+
           <div className="p-4 flex justify-between items-center">
             <div>
-              <p className="font-bold text-textDark flex items-center"><Truck size={16} className="mr-2 text-amber-500"/> Supplier Dues</p>
+              <p className="font-bold text-textDark flex items-center">
+                <Truck size={16} className="mr-2 text-amber-500"/> Supplier Dues
+              </p>
               <p className="text-xs text-gray-500 mt-0.5 ml-6">Money to pay</p>
             </div>
-            <p className="font-bold text-amber-500">₹{analytics.supplierPaymentPending.toLocaleString('en-IN')}</p>
+            <p className="font-bold text-amber-500">
+              ₹{analytics.supplierPaymentPending.toLocaleString('en-IN')}
+            </p>
           </div>
         </div>
       </div>
