@@ -1,3 +1,16 @@
+# Dependencies
+node_modules/
+
+# Env files (CRITICAL)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist
+dist-ssr
+build
+
 # Logs
 logs
 *.log
@@ -7,12 +20,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Local configs
 *.local
 
-# Editor directories and files
+# Editor files
 .vscode/*
 !.vscode/extensions.json
 .idea
