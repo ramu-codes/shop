@@ -138,9 +138,10 @@ const Dues = () => {
       </div>
 
       {/* Add Due Modal */}
+      {/* Add Due Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 animate-slide-up sm:animate-none">
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 pb-12 animate-slide-up sm:animate-none max-h-[85vh] overflow-y-auto overscroll-contain">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-[#0f172a]">Add Customer Due</h2>
               <button onClick={() => setIsModalOpen(false)} className="p-2 bg-gray-100 rounded-full text-gray-600 active:bg-gray-200">

@@ -119,9 +119,10 @@ const Sales = () => {
       </div>
 
       {/* Add Sale Modal */}
+      {/* Add Sale Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl p-5">
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 pb-12 animate-slide-up sm:animate-none max-h-[85vh] overflow-y-auto overscroll-contain">
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-bold">Add New Sale</h2>
               <button onClick={() => setIsModalOpen(false)} className="p-1 bg-gray-100 rounded-full text-gray-600">
