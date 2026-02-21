@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Theme Variables (Global Design System) */
+:root {
+  --color-primary: #1e40af;      /* Deep Blue */
+  --color-primary-dark: #1e3a8a; /* Darker Blue */
+  --color-success: #16a34a;      /* Green */
+  --color-danger: #dc2626;       /* Red */
+  --color-warning: #d97706;      /* Amber */
+  --color-bg: #e2e8f0;           /* App background */
+  --color-card: #ffffff;         /* Card background */
+  --color-text: #0f172a;         /* Main text */
+  --color-muted: #64748b;        /* Secondary text */
+}
+
+/* Base Body Styling */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reusable Utility Classes */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+.text-primary {
+  color: var(--color-primary);
+}
+.text-muted {
+  color: var(--color-muted);
+}
+.card {
+  background: var(--color-card);
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* Scrollbar Hidden but Scrollable */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
