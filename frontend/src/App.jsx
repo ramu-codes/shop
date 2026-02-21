@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout';
+
+// Notice the capital 'C' in Components
+import Layout from './Components/Layout';
 
 // Actual Page Imports
 import Home from './pages/Home';
