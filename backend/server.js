@@ -9,6 +9,7 @@ import transactionRoutes from './routes/transactionRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import dueRoutes from './routes/dueRoutes.js';
 import supplierRoutes from './routes/supplierRoutes.js';
+import githubStudentToolsRoutes from './routes/githubStudentToolsRoutes.js';
 dotenv.config();
 connectDB();
 
@@ -24,6 +25,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/dues', dueRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/github-student-tools', githubStudentToolsRoutes);
 
 // Root route for testing
 app.get('/api/health', (req, res) => {
