@@ -13,6 +13,7 @@ import Payments from './pages/Payments';
 import Supplier from './pages/Supplier';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import GitHubStudentTools from './pages/GitHubStudentTools';
 
 const AppContent = () => {
   const { token } = useContext(AuthContext);
@@ -48,6 +49,7 @@ const AppContent = () => {
           <Route path="payments" element={<Payments />} />
           <Route path="supplier" element={<Supplier />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="github-student-tools" element={<GitHubStudentTools />} />
         </Route>
 
         {/* Redirect wrong URL to home */}

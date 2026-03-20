@@ -9,7 +9,8 @@ import {
   EyeOff,
   ShieldAlert,
   CreditCard,
-  ChevronRight
+  ChevronRight,
+  GraduationCap
 } from 'lucide-react';
 import api from '../api';
 import toast from 'react-hot-toast';
@@ -136,6 +137,22 @@ const Home = () => {
 
       {/* System Buttons */}
       <div className="space-y-4">
+        <div>
+          <h2 className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
+            Student Resources
+          </h2>
+          <button onClick={() => navigate('/github-student-tools')} className="w-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] text-white p-4 rounded-2xl shadow-md flex items-center justify-between active:scale-95 transition-transform">
+            <div className="flex items-center">
+              <GraduationCap size={24} className="mr-3" />
+              <div className="text-left">
+                <span className="font-bold text-lg block">GitHub Student Tools</span>
+                <span className="text-[11px] text-blue-200">Free dev tools & credits</span>
+              </div>
+            </div>
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
         <div>
           <h2 className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">
             Payments System
