@@ -1,24 +1,28 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState } from 'react';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Check local storage immediately when the app loads
   const [token, setToken] = useState(localStorage.getItem('shopToken') || null);
+  const [username, setUsername] = useState(localStorage.getItem('shopUsername') || null);
 
-  const login = (newToken) => {
-    localStorage.setItem('shopToken', newToken); // Save to phone storage
-    setToken(newToken); // Unlock the app
+  const login = (newToken, newUsername) => {
+    localStorage.setItem('shopToken', newToken);
+    if (newUsername) localStorage.setItem('shopUsername', newUsername);
+    setToken(newToken);
+    setUsername(newUsername || null);
   };
 
   const logout = () => {
-    localStorage.removeItem('shopToken'); // Erase from phone
-    sessionStorage.removeItem('masterPin'); // Erase Admin PIN
-    setToken(null); // Lock the app
+    localStorage.removeItem('shopToken');
+    localStorage.removeItem('shopUsername');
+    sessionStorage.removeItem('adminVerified');
+    setToken(null);
+    setUsername(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, username, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,26 +1,20 @@
 import jwt from 'jsonwebtoken';
 
 export const protect = async (req, res, next) => {
-    let token;
+    const authHeader = req.headers.authorization;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            // Extract token from header
-            token = req.headers.authorization.split(' ')[1];
-
-            // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            
-            // Attach admin role to request object
-            req.user = { role: decoded.role };
-            next();
-        } catch (error) {
-            console.error('Token verification failed:', error.message);
-            res.status(401).json({ message: 'Not authorized, token failed' });
-        }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Not authorized, no token provided' });
     }
 
-    if (!token) {
-        res.status(401).json({ message: 'Not authorized, no token provided' });
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = { id: decoded.id, role: decoded.role };
+        return next();
+    } catch (error) {
+        console.error('Token verification failed:', error.message);
+        return res.status(401).json({ message: 'Not authorized, token failed' });
     }
 };
