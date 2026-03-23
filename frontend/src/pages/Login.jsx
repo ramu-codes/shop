@@ -5,19 +5,23 @@ import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const { login } = useContext(AuthContext);
+  const [isRegister, setIsRegister] = useState(false);
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', { password });
-      login(data.token);
+      const endpoint = isRegister ? '/auth/register' : '/auth/login';
+      const { data } = await api.post(endpoint, { username, password });
+      login(data.token, data.username);
     } catch (err) {
-      setError('Incorrect PIN. Access Denied.');
+      const msg = err.response?.data?.message;
+      setError(msg || (isRegister ? 'Registration failed.' : 'Incorrect credentials. Access Denied.'));
     } finally {
       setLoading(false);
     }
@@ -33,17 +37,28 @@ const Login = () => {
         
         <div className="text-center">
           <h1 className="text-3xl font-black text-[#0f172a]">ShopOne</h1>
-          <p className="text-sm text-gray-500 mt-2 font-medium uppercase tracking-widest">Secure Owner Access</p>
+          <p className="text-sm text-gray-500 mt-2 font-medium uppercase tracking-widest">
+            {isRegister ? 'Create Account' : 'Secure Owner Access'}
+          </p>
         </div>
 
-        <form onSubmit={handleLogin} className="w-full space-y-4 mt-4">
+        <form onSubmit={handleSubmit} className="w-full space-y-4 mt-4">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            required
+            className="w-full border-2 border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-100 focus:border-[#1e40af] outline-none transition-all font-semibold text-[#0f172a]"
+            autoFocus
+          />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter Security PIN"
-            className="w-full border-2 border-gray-200 rounded-2xl p-5 text-center text-2xl tracking-[0.5em] focus:ring-4 focus:ring-blue-100 focus:border-[#1e40af] outline-none transition-all font-bold text-[#0f172a]"
-            autoFocus
+            placeholder={isRegister ? 'Create Password (min 8 chars)' : 'Password'}
+            required
+            className="w-full border-2 border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-100 focus:border-[#1e40af] outline-none transition-all font-semibold text-[#0f172a]"
           />
           
           {error && (
@@ -57,9 +72,17 @@ const Login = () => {
             disabled={loading}
             className="w-full bg-[#0f172a] text-white font-black text-lg py-5 rounded-2xl active:scale-95 transition-transform shadow-lg"
           >
-            {loading ? 'Verifying...' : 'Unlock System'}
+            {loading ? 'Please wait...' : isRegister ? 'Create Account' : 'Unlock System'}
           </button>
         </form>
+
+        <button
+          type="button"
+          onClick={() => { setIsRegister(!isRegister); setError(''); }}
+          className="text-sm text-[#1e40af] font-semibold"
+        >
+          {isRegister ? 'Already have an account? Login' : "Don't have an account? Register"}
+        </button>
       </div>
     </div>
   );

@@ -1,39 +1,34 @@
 import { useState, useEffect, useContext } from 'react';
 import api from '../api';
-import { ShieldAlert, LogOut, TrendingUp, TrendingDown, Wallet, Users, Truck, Lock, Loader2 } from 'lucide-react';
+import { ShieldAlert, LogOut, TrendingUp, TrendingDown, Wallet, Lock, Loader2 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const Admin = () => {
-  const { token, logout } = useContext(AuthContext); // logout clears app access entirely
+  const { logout } = useContext(AuthContext);
   const [analytics, setAnalytics] = useState(null);
   const [adminPin, setAdminPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Auto-unlock if PIN was already entered during this session
+  // Auto-unlock if already verified during this session
   useEffect(() => {
-    const savedPin = sessionStorage.getItem('masterPin');
-    if (savedPin && token) {
-      fetchAnalytics(savedPin);
+    const alreadyVerified = sessionStorage.getItem('adminVerified');
+    if (alreadyVerified) {
+      fetchAnalytics();
     }
-  }, [token]);
+  }, []);
 
-  const fetchAnalytics = async (pinToUse) => {
+  const fetchAnalytics = async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get('/admin/analytics', {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'x-admin-pin': pinToUse
-        }
-      });
+      const { data } = await api.get('/admin/analytics');
       setAnalytics(data);
       setIsUnlocked(true);
-      sessionStorage.setItem('masterPin', pinToUse);
+      sessionStorage.setItem('adminVerified', '1');
     } catch (err) {
       toast.error('Admin Access Denied');
-      sessionStorage.removeItem('masterPin');
+      sessionStorage.removeItem('adminVerified');
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +36,7 @@ const Admin = () => {
 
   const handleUnlock = (e) => {
     e.preventDefault();
-    fetchAnalytics(adminPin);
+    fetchAnalytics();
   };
 
   // Lock Screen UI
@@ -85,7 +80,7 @@ const Admin = () => {
           <h1 className="text-2xl font-black flex items-center"><ShieldAlert size={24} className="mr-2 text-blue-400"/> Admin Panel</h1>
           <p className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-widest">Financial Overview</p>
         </div>
-        <button onClick={() => { sessionStorage.removeItem('masterPin'); setIsUnlocked(false); }} className="p-3 bg-white/10 rounded-xl active:scale-95 transition-all hover:bg-white/20 text-gray-300">
+        <button onClick={() => { sessionStorage.removeItem('adminVerified'); setIsUnlocked(false); }} className="p-3 bg-white/10 rounded-xl active:scale-95 transition-all hover:bg-white/20 text-gray-300">
           <Lock size={20} />
         </button>
       </div>

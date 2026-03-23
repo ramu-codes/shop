@@ -57,6 +57,9 @@ export const getTransactions = async (req, res) => {
         } else if (period === 'monthly') {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             query.date = { $gte: startOfMonth };
+        } else if (period === 'yearly') {
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            query.date = { $gte: startOfYear };
         }
     }
 
